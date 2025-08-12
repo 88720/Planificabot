@@ -6,7 +6,7 @@
     <title>Planificabot</title>
     <!-- Tailwind CSS CDN para estilos modernos -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font awesome para iconos (google) -->
+    <!-- Font awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Icono de la página -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A7%91%E2%80%8D%F0%9F%8F%AB%3C/text%3E%3C/svg%3E">
@@ -214,6 +214,10 @@
             <button id="googleSignInBtn" class="bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow border border-gray-300 hover:bg-gray-100 transition duration-300 w-full max-w-sm">
                 <i class="fab fa-google mr-2"></i> Iniciar con Google
             </button>
+            <!-- Nuevo botón para acceso anónimo -->
+            <button id="anonymousSignInBtn" class="bg-gray-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-gray-600 transition duration-300 w-full max-w-sm">
+                <i class="fas fa-user-secret mr-2"></i> Probar sin cuenta
+            </button>
         </div>
 
         <!-- Sección de Usuario y Lógica de Planificación (Oculta por defecto) -->
@@ -301,7 +305,7 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Configuración de Firebase (proporcionada por el entorno) ---
@@ -321,6 +325,7 @@
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
         const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const anonymousSignInBtn = document.getElementById('anonymousSignInBtn'); // Nuevo botón
         const logoutBtn = document.getElementById('logoutBtn');
         const userEmailDisplay = document.getElementById('userEmailDisplay');
         const userPlanStatus = document.getElementById('userPlanStatus');
@@ -332,8 +337,8 @@
         const geminiResponseText = document.getElementById('geminiResponseText');
         const copyResponseBtn = document.getElementById('copyResponseBtn');
 
-        // --- URL del Webhook de n8n (REEMPLAZA ESTA URL CON LA TUYA) ---
-        const N8N_WEBHOOK_URL = 'https://n8n.planificabot.com/webhook-test/b56a5a17-557f-4adb-9567-8f65c5db2bc1';
+        // *** ¡MUY IMPORTANTE! REEMPLAZA ESTA URL CON LA URL DE TU WEBHOOK DE N8N ***
+        const N8N_WEBHOOK_URL = 'https://n8n.planificabot.com/webhook/planificacion-ai'; // <--- PEGA LA URL AQUÍ
 
         let currentUser = null; // Variable global para el usuario autenticado
         let userPlan = null;    // Variable global para el plan del usuario
@@ -347,7 +352,8 @@
                 currentUser = user;
                 authContainer.style.display = 'none';
                 appContainer.style.display = 'block';
-                userEmailDisplay.textContent = user.email;
+                // Mostrar correo si existe, si no, mostrar que es un usuario anónimo
+                userEmailDisplay.textContent = user.isAnonymous ? 'Usuario anónimo' : user.email;
 
                 // Cargar datos del usuario de Firestore
                 const userDocRef = doc(db, 'users', user.uid);
@@ -360,12 +366,12 @@
                     generationsLeft = userData.monthlyGenerations;
                     updateUIBasedOnPlan();
                 } else {
-                    // Si es un nuevo usuario, creamos un documento con el plan por defecto
+                    // Si es un nuevo usuario (incluyendo anónimos), creamos un documento con el plan por defecto
                     userPlan = 'gratis';
                     generationsLeft = 5;
                     await setDoc(userDocRef, {
                         uid: user.uid,
-                        email: user.email,
+                        email: user.isAnonymous ? 'anonymous' : user.email,
                         plan: userPlan,
                         monthlyGenerations: generationsLeft,
                         createdAt: new Date()
@@ -390,13 +396,13 @@
                 userPlanStatus.textContent = 'Plan: Premium (generaciones ilimitadas)';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Generar Planificación con IA';
-                submitBtn.classList.remove('opacity-50');
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
                 userPlanStatus.textContent = `Plan: Gratuito (${generationsLeft} de 5 generaciones restantes)`;
                 if (generationsLeft > 0) {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Generar Planificación con IA';
-                    submitBtn.classList.remove('opacity-50');
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 } else {
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Límite alcanzado. ¡Pásate a Premium!';
@@ -446,6 +452,20 @@
                 errorMessageDiv.style.display = 'block';
             }
         });
+
+        // Nuevo manejador de eventos para el botón de inicio de sesión anónimo
+        anonymousSignInBtn.addEventListener('click', async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log('Inicio de sesión anónimo exitoso');
+                errorMessageDiv.style.display = 'none';
+            } catch (error) {
+                console.error('Error al iniciar sesión anónimamente:', error);
+                errorMessageDiv.textContent = 'Error al iniciar sesión de forma anónima. Inténtalo de nuevo.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+
 
         logoutBtn.addEventListener('click', async () => {
             await signOut(auth);
@@ -516,7 +536,16 @@
 
                 // Preparar los datos para enviar al webhook de n8n
                 const requestBodyForN8n = {
-                    prompt_ia: promptAI
+                    prompt_ia: promptAI,
+                    form_data: {
+                        nivel: nivel,
+                        gradoAnio: gradoAnio,
+                        materia: materia,
+                        temaEspecifico: temaEspecifico,
+                        caracteristicasEstudiantes: caracteristicasEstudiantes,
+                        localidad: localidad,
+                        aspectosSeleccionados: aspectosSeleccionados
+                    }
                 };
 
                 // Enviar la petición POST al Webhook de n8n con el token en la cabecera
