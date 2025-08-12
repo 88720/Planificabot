@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificabot</title>
+    <!-- Tailwind CSS CDN para estilos modernos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font awesome para iconos (google) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Icono de la página -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A7%91%E2%80%8D%F0%9F%8F%AB%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        /* Estilos CSS originales del usuario, adaptados para complementar Tailwind */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9eff5; 
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 30px auto;
+            border: 1px solid #dcdcdc;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header img {
+            width: 80px;
+            height: auto;
+            margin-bottom: 15px;
+            background-color: #f1cccc;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+
+        input, textarea, select {
+            width: 100%; /* Ajuste a 100% para compatibilidad con Tailwind */
+            padding: 12px;
+            border: 1px solid #b0c4de;
+            border-radius: 6px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f8faff;
+            border-radius: 8px;
+            border: 1px solid #e0e6ec;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            margin-right: 10px;
+            width: auto;
+            margin-bottom: 0;
+        }
+
+        /* --- ESTILOS PARA LA RESPUESTA DE LA IA --- */
+        #loadingMessage {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1em;
+            color: #007bff;
+            display: none;
+        }
+
+        #geminiResponseContainer {
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 1px solid #91d5ff;
+            display: none;
+        }
+
+        #geminiResponseContainer h3 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        #geminiResponseText {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            font-family: 'Georgia', serif;
+            font-size: 1.1em;
+            line-height: 1.8;
+            word-wrap: break-word;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        #geminiResponseText h1,
+        #geminiResponseText h2,
+        #geminiResponseText h3,
+        #geminiResponseText h4,
+        #geminiResponseText h5,
+        #geminiResponseText h6 {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            color: #333;
+        }
+
+        .copy-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+        
+        #errorMessage {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-blue-50">
+    <div class="container mx-auto p-6 lg:p-10 rounded-xl shadow-lg">
+        <header>
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23FFFFFF' stroke='%23333333' stroke-width='1.5' d='M12 2L6 7V22H18V7L12 2ZM8 10H10V12H8V10Z'/%3E%3C/svg%3E" alt="Guardapolvo Blanco Logo Simple">
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-800">Planificabot</h1>
+            <p class="text-lg text-gray-600 mt-2">Tu asistente inteligente para planificaciones docentes</p>
+        </header>
+
+        <!-- Sección de Autenticación -->
+        <div id="authContainer" class="flex flex-col items-center gap-4 text-center">
+            <h2 class="text-2xl font-semibold text-gray-700">Inicia sesión o regístrate</h2>
+            <p class="text-gray-500">Para generar planificaciones, necesitas una cuenta.</p>
+            
+            <div class="w-full max-w-sm flex flex-col gap-4">
+                <input type="email" id="emailInput" placeholder="Correo electrónico" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="passwordInput" placeholder="Contraseña" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
+                <button id="loginBtn" class="flex-1 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Iniciar Sesión
+                </button>
+                <button id="registerBtn" class="flex-1 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-green-700 transition duration-300">
+                    <i class="fas fa-user-plus mr-2"></i> Registrarse
+                </button>
+            </div>
+            
+            <div class="relative flex items-center w-full max-w-sm my-4">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="flex-shrink mx-4 text-gray-400">o</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <button id="googleSignInBtn" class="bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow border border-gray-300 hover:bg-gray-100 transition duration-300 w-full max-w-sm">
+                <i class="fab fa-google mr-2"></i> Iniciar con Google
+            </button>
+        </div>
+
+        <!-- Sección de Usuario y Lógica de Planificación (Oculta por defecto) -->
+        <div id="appContainer" style="display: none;">
+            <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg shadow-sm mb-6">
+                <div>
+                    <span class="text-sm text-gray-600">Hola, <span id="userEmailDisplay" class="font-bold"></span></span>
+                    <br>
+                    <span id="userPlanStatus" class="text-xs text-gray-500"></span>
+                </div>
+                <button id="logoutBtn" class="bg-red-500 text-white text-sm py-2 px-4 rounded-lg shadow hover:bg-red-600 transition duration-300">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            
+            <form id="planificacionForm">
+                <div class="form-group">
+                    <label for="nivel">Nivel Educativo:</label>
+                    <select id="nivel">
+                        <option value="Primaria">Primaria</option>
+                        <option value="Secundaria">Secundaria</option>
+                        <option value="Inicial">Inicial</option>
+                        <option value="Superior">Superior</option>
+                        <option value="Modalidades">Modalidades</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="gradoAnio">Grado/Año/Curso:</label>
+                    <input type="text" id="gradoAnio" placeholder="Ej: 3ro, 5to, Ciclo Básico, 6to Año">
+                </div>
+
+                <div class="form-group">
+                    <label for="materia">Materia/Área:</label>
+                    <input type="text" id="materia" placeholder="Ej: Lengua y Literatura, Matemática, Ciencias Naturales, Educación Física">
+                </div>
+
+                <div class="form-group">
+                    <label for="temaEspecifico">Tema Específico:</label>
+                    <input type="text" id="temaEspecifico" placeholder="Ej: La función cuadrática, El cuento realista">
+                </div>
+
+                <div class="form-group">
+                    <label for="caracteristicasEstudiantes">Características de los Estudiantes:</label>
+                    <textarea id="caracteristicasEstudiantes" rows="4" placeholder="Ej: Grupo heterogéneo con algunos estudiantes con dificultades de atención; Les gusta trabajar en grupo; Requerir actividades con movimiento."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="localidad">Localidad de la escuela:</label>
+                    <input type="text" id="localidad" placeholder="Ej: Chascomús, La Plata">
+                </div>
+                
+                <div class="form-group">
+                    <label>¿Qué aspectos de la planificación necesitas?</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="aspecto" value="Objetivo de Aprendizaje" checked> Objetivo de Aprendizaje</label>
+                        <label><input type="checkbox" class="aspecto" value="Contenidos Clave" checked> Contenidos Clave</label>
+                        <label><input type="checkbox" class="aspecto" value="Actividad de Inicio"> Actividad de Inicio</label>
+                        <label><input type="checkbox" class="aspecto" value="Actividad de Desarrollo"> Actividad de Desarrollo</label>
+                        <label><input type="checkbox" class="aspecto" value="Actividad de Cierre"> Actividad de Cierre</label>
+                        <label><input type="checkbox" class="aspecto" value="Recursos Didácticos"> Recursos Didácticos</label>
+                        <label><input type="checkbox" class="aspecto" value="Criterios de Evaluación"> Criterios de Evaluación</label>
+                        <label><input type="checkbox" class="aspecto" value="Adecuaciones Curriculares"> Sugerencias de Adecuaciones Curriculares</label>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition duration-300 w-full max-w-sm mx-auto">
+                    Generar Planificación con IA
+                </button>
+            </form>
+        </div>
+
+        <div id="loadingMessage" class="text-center text-blue-500 mt-5 hidden">Cargando respuesta de la IA... esto puede tardar un momento.</div>
+        <div id="errorMessage" class="text-center text-red-500 font-bold mt-5 hidden"></div>
+        <div id="geminiResponseContainer" class="hidden">
+            <h3 class="text-lg font-semibold mt-6 mb-3 text-gray-700">Respuesta de la IA Gemini:</h3>
+            <div id="geminiResponseText" class="bg-white p-5 rounded-lg border border-gray-300 text-gray-800"></div>
+            <button id="copyResponseBtn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-green-600 transition duration-300 mt-4">
+                Copiar respuesta
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Configuración de Firebase (proporcionada por el entorno) ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Inicialización de Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Referencias a elementos del DOM ---
+        const authContainer = document.getElementById('authContainer');
+        const appContainer = document.getElementById('appContainer');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        const userPlanStatus = document.getElementById('userPlanStatus');
+        const planificacionForm = document.getElementById('planificacionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingMessageDiv = document.getElementById('loadingMessage');
+        const errorMessageDiv = document.getElementById('errorMessage');
+        const geminiResponseContainerDiv = document.getElementById('geminiResponseContainer');
+        const geminiResponseText = document.getElementById('geminiResponseText');
+        const copyResponseBtn = document.getElementById('copyResponseBtn');
+
+        // --- URL del Webhook de n8n (REEMPLAZA ESTA URL CON LA TUYA) ---
+        const N8N_WEBHOOK_URL = 'https://n8n.planificabot.com/webhook-test/b56a5a17-557f-4adb-9567-8f65c5db2bc1';
+
+        let currentUser = null; // Variable global para el usuario autenticado
+        let userPlan = null;    // Variable global para el plan del usuario
+        let generationsLeft = 0; // Variable para las generaciones restantes
+
+        // --- LÓGICA DE AUTENTICACIÓN ---
+        // Listener para detectar cambios en el estado de autenticación
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Usuario logueado
+                currentUser = user;
+                authContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+                userEmailDisplay.textContent = user.email;
+
+                // Cargar datos del usuario de Firestore
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    // Si el documento existe, obtener los datos
+                    const userData = userDoc.data();
+                    userPlan = userData.plan;
+                    generationsLeft = userData.monthlyGenerations;
+                    updateUIBasedOnPlan();
+                } else {
+                    // Si es un nuevo usuario, creamos un documento con el plan por defecto
+                    userPlan = 'gratis';
+                    generationsLeft = 5;
+                    await setDoc(userDocRef, {
+                        uid: user.uid,
+                        email: user.email,
+                        plan: userPlan,
+                        monthlyGenerations: generationsLeft,
+                        createdAt: new Date()
+                    });
+                    updateUIBasedOnPlan();
+                }
+
+            } else {
+                // Usuario no logueado
+                currentUser = null;
+                authContainer.style.display = 'flex';
+                appContainer.style.display = 'none';
+                userPlanStatus.textContent = '';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Inicia sesión para generar';
+            }
+        });
+
+        // Función para actualizar la interfaz según el plan del usuario
+        function updateUIBasedOnPlan() {
+            if (userPlan === 'premium') {
+                userPlanStatus.textContent = 'Plan: Premium (generaciones ilimitadas)';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generar Planificación con IA';
+                submitBtn.classList.remove('opacity-50');
+            } else {
+                userPlanStatus.textContent = `Plan: Gratuito (${generationsLeft} de 5 generaciones restantes)`;
+                if (generationsLeft > 0) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Generar Planificación con IA';
+                    submitBtn.classList.remove('opacity-50');
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Límite alcanzado. ¡Pásate a Premium!';
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        // Manejadores de eventos para los botones de autenticación
+        loginBtn.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log('Usuario ha iniciado sesión');
+                errorMessageDiv.style.display = 'none';
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
+                errorMessageDiv.textContent = 'Error al iniciar sesión. Verifica tu correo y contraseña.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+
+        registerBtn.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                console.log('Usuario registrado y logueado');
+                errorMessageDiv.style.display = 'none';
+            } catch (error) {
+                console.error('Error al registrarse:', error);
+                errorMessageDiv.textContent = 'Error al registrarse. Asegúrate de usar un correo válido y una contraseña de al menos 6 caracteres.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+        
+        googleSignInBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                console.log('Inicio de sesión con Google exitoso');
+                errorMessageDiv.style.display = 'none';
+            } catch (error) {
+                console.error('Error al iniciar sesión con Google:', error);
+                errorMessageDiv.textContent = 'Error al iniciar sesión con Google. Inténtalo de nuevo.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await signOut(auth);
+            console.log('Usuario ha cerrado sesión');
+            userPlan = null;
+            generationsLeft = 0;
+            errorMessageDiv.style.display = 'none';
+        });
+
+        // --- FUNCION PRINCIPAL: ENVIAR SOLICITUD A N8N ---
+        planificacionForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!currentUser) {
+                errorMessageDiv.textContent = 'Debes iniciar sesión para generar una planificación.';
+                errorMessageDiv.style.display = 'block';
+                return;
+            }
+
+            // Ocultar mensajes anteriores y mostrar mensaje de carga
+            geminiResponseContainerDiv.style.display = 'none';
+            errorMessageDiv.style.display = 'none';
+            loadingMessageDiv.style.display = 'block';
+            geminiResponseText.innerHTML = '';
+            submitBtn.disabled = true; // Desactivar el botón para evitar múltiples peticiones
+
+            // Capturar los datos del formulario
+            const nivel = document.getElementById('nivel').value.trim();
+            const gradoAnio = document.getElementById('gradoAnio').value.trim();
+            const materia = document.getElementById('materia').value.trim();
+            const temaEspecifico = document.getElementById('temaEspecifico').value.trim();
+            const caracteristicasEstudiantes = document.getElementById('caracteristicasEstudiantes').value.trim();
+            const localidad = document.getElementById('localidad').value.trim();
+
+            const aspectoCheckboxes = document.querySelectorAll('.aspecto');
+            const aspectosSeleccionados = Array.from(aspectoCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            // Construir el prompt para la IA
+            const promptAI = `
+                **Rol:** Asistente pedagógico experto de la Provincia de Buenos Aires.
+                **Tarea:** Genera una planificación o actividades detalladas para el aula, adaptadas a los siguientes parámetros.
+                **Contexto crucial:** Utiliza EXCLUSIVAMENTE como base para tu respuesta los diseños curriculares, las normativas vigentes y los recursos pedagógicos propios de la educación de la Provincia de Buenos Aires (PBA). Si la información proporcionada no es suficiente para basarse en documentos de PBA, indica claramente la limitación. En el caso de nivel inicial, debes usar el diseño curricular del año 2022, y en el caso del nivel primario, los diseños curriculares del año 2018.
+                ---
+                **Parámetros de la Solicitud:**
+                Nivel Educativo: ${nivel || 'No especificado'}
+                Grado/Año/Curso: ${gradoAnio || 'No especificado'}
+                Materia/Área: ${materia || 'No especificado'}
+                Tema Específico: ${temaEspecifico || 'No especificado'}
+                Características de los Estudiantes: ${caracteristicasEstudiantes || 'No especificadas'}
+                Localidad de la escuela: ${localidad || 'No especificada'}
+                ---
+                **Aspectos de la Planificación requeridos:**
+                Necesito: ${aspectosSeleccionados.join(', ')}.
+                ---
+                **Instrucciones adicionales para la IA:**
+                * Sé conciso, práctico y directo.
+                * Adapta el lenguaje y las actividades para el nivel educativo y las características específicas de los estudiantes en la localidad dada.
+                * Si algún aspecto de la planificación no puede ser generado con base en los documentos curriculares de PBA, indícalo claramente.
+                * Presenta la información de manera clara, utilizando viñetas, numeración o subtítulos cuando sea apropiado.
+                * Mantén un tono profesional y colaborativo.
+            `.trim();
+
+            try {
+                // Obtener el token de autenticación del usuario
+                const idToken = await currentUser.getIdToken();
+
+                // Preparar los datos para enviar al webhook de n8n
+                const requestBodyForN8n = {
+                    prompt_ia: promptAI
+                };
+
+                // Enviar la petición POST al Webhook de n8n con el token en la cabecera
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}` // Token de autenticación
+                    },
+                    body: JSON.stringify(requestBodyForN8n)
+                });
+
+                loadingMessageDiv.style.display = 'none';
+                submitBtn.disabled = false; // Habilitar el botón nuevamente
+
+                if (!response.ok) {
+                    const errorDetails = await response.json();
+                    throw new Error(errorDetails.message || 'Error desconocido');
+                }
+
+                const data = await response.json();
+
+                if (data.material_generado) {
+                    // Usar un parser de Markdown a HTML para una mejor visualización
+                    // (Esta es una simplificación, en un entorno real usarías una librería)
+                    let formattedText = data.material_generado
+                        .replace(/#\s+(.*)/g, '<h3>$1</h3>') // Encabezados H3
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Negritas
+                        .replace(/\n/g, '<br>'); // Saltos de línea
+
+                    geminiResponseText.innerHTML = formattedText;
+                    geminiResponseContainerDiv.style.display = 'block';
+                    geminiResponseContainerDiv.scrollIntoView({ behavior: 'smooth' });
+                    errorMessageDiv.style.display = 'none';
+                } else if (data.error) {
+                    errorMessageDiv.textContent = data.error;
+                    errorMessageDiv.style.display = 'block';
+                } else {
+                    errorMessageDiv.textContent = `La IA no devolvió una planificación válida.`;
+                    errorMessageDiv.style.display = 'block';
+                }
+
+                // Actualizar el estado del usuario después de una generación exitosa (o con error)
+                // Es importante volver a cargar el documento para reflejar el nuevo contador de generaciones
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    userPlan = userData.plan;
+                    generationsLeft = userData.monthlyGenerations;
+                    updateUIBasedOnPlan();
+                }
+
+            } catch (error) {
+                console.error("Error de comunicación:", error);
+                loadingMessageDiv.style.display = 'none';
+                submitBtn.disabled = false;
+                errorMessageDiv.textContent = `Hubo un error: ${error.message}. Por favor, inténtalo de nuevo.`;
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+
+        // Lógica del botón de copiar (sin cambios)
+        copyResponseBtn.addEventListener('click', async () => {
+            const textToCopy = geminiResponseText.textContent;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                // Usamos un modal o un mensaje temporal en lugar de alert()
+                const originalText = copyResponseBtn.textContent;
+                copyResponseBtn.textContent = '¡Copiado!';
+                setTimeout(() => {
+                    copyResponseBtn.textContent = originalText;
+                }, 2000);
+            } catch (err) {
+                console.error('Error al copiar el texto: ', err);
+                errorMessageDiv.textContent = 'No se pudo copiar la respuesta automáticamente. Por favor, cópiala manualmente.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
