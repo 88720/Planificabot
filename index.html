@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificabot</title>
-    <!-- Tailwind CSS CDN para estilos modernos como queremos! -->
+    <!-- Tailwind CSS CDN para estilos modernos -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -12,117 +12,43 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A7%91%E2%80%8D%F0%9F%8F%AB%3C/text%3E%3C/svg%3E">
     
     <style>
-        /* Estilos CSS originales del usuario, adaptados para complementar Tailwind */
+        /* Estilos CSS personalizados para complementar Tailwind */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e9eff5; 
-            color: #333;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #1f2937;
             line-height: 1.6;
         }
 
-        .container {
-            background-color: #ffffff;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 30px auto;
-            border: 1px solid #dcdcdc;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        header img {
-            width: 80px;
-            height: auto;
-            margin-bottom: 15px;
-            background-color: #f1cccc;
-            padding: 10px;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-            font-size: 1em;
-        }
-
+        /* Estilos para los campos de formulario para una apariencia consistente */
         input, textarea, select {
-            width: 100%; /* Ajuste a 100% para compatibilidad con Tailwind */
+            width: 100%;
             padding: 12px;
-            border: 1px solid #b0c4de;
-            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             font-size: 1em;
             box-sizing: border-box;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         input:focus, textarea:focus, select:focus {
-            border-color: #007bff;
+            border-color: #3b82f6;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
         textarea {
             resize: vertical;
-            min-height: 80px;
-        }
-
-        .checkbox-group {
-            margin-bottom: 25px;
-            padding: 15px;
-            background-color: #f8faff;
-            border-radius: 8px;
-            border: 1px solid #e0e6ec;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: normal;
-            cursor: pointer;
-        }
-
-        .checkbox-group input {
-            margin-right: 10px;
-            width: auto;
-            margin-bottom: 0;
+            min-height: 100px;
         }
 
         /* --- ESTILOS PARA LA RESPUESTA DE LA IA --- */
-        #loadingMessage {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1em;
-            color: #007bff;
-            display: none;
-        }
-
-        #geminiResponseContainer {
-            background-color: #e6f7ff;
+        #geminiResponseContainer, #feedbackContainer {
+            background-color: #eff6ff;
             padding: 20px;
             border-radius: 8px;
             margin-top: 30px;
-            border: 1px solid #91d5ff;
-            display: none;
-        }
-
-        #geminiResponseContainer h3 {
-            color: #0056b3;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1em;
+            border: 1px solid #bfdbfe;
         }
 
         #geminiResponseText {
@@ -136,52 +62,17 @@
             word-wrap: break-word;
             max-height: 600px;
             overflow-y: auto;
-            border: 1px solid #ccc;
+            border: 1px solid #e5e7eb;
             text-align: left;
-        }
-
-        #geminiResponseText h1,
-        #geminiResponseText h2,
-        #geminiResponseText h3,
-        #geminiResponseText h4,
-        #geminiResponseText h5,
-        #geminiResponseText h6 {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-top: 1em;
-            margin-bottom: 0.5em;
-            color: #333;
-        }
-
-        .copy-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 15px;
-            transition: background-color 0.3s ease;
-        }
-
-        .copy-button:hover {
-            background-color: #45a049;
-        }
-        
-        #errorMessage {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-            display: none;
         }
     </style>
 </head>
-<body class="bg-blue-50">
-    <div class="container mx-auto p-6 lg:p-10 rounded-xl shadow-lg">
-        <header>
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23FFFFFF' stroke='%23333333' stroke-width='1.5' d='M12 2L6 7V22H18V7L12 2ZM8 10H10V12H8V10Z'/%3E%3C/svg%3E" alt="Guardapolvo Blanco Logo Simple">
+<body class="bg-gray-50">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-10 my-8 max-w-4xl bg-white rounded-2xl shadow-xl">
+        <header class="text-center mb-8">
+            <div class="inline-block p-3 bg-blue-100 rounded-full mb-4">
+                <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+            </div>
             <h1 class="text-3xl lg:text-4xl font-bold text-gray-800">Planificabot</h1>
             <p class="text-lg text-gray-600 mt-2">Tu asistente inteligente para planificaciones docentes</p>
         </header>
@@ -196,11 +87,11 @@
                 <input type="password" id="passwordInput" placeholder="Contraseña" class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
-                <button id="loginBtn" class="flex-1 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition duration-300">
+            <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                <button id="loginBtn" class="flex-1 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
                     <i class="fas fa-sign-in-alt mr-2"></i> Iniciar Sesión
                 </button>
-                <button id="registerBtn" class="flex-1 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-green-700 transition duration-300">
+                <button id="registerBtn" class="flex-1 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300">
                     <i class="fas fa-user-plus mr-2"></i> Registrarse
                 </button>
             </div>
@@ -211,11 +102,10 @@
                 <div class="flex-grow border-t border-gray-300"></div>
             </div>
 
-            <button id="googleSignInBtn" class="bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow border border-gray-300 hover:bg-gray-100 transition duration-300 w-full max-w-sm">
+            <button id="googleSignInBtn" class="bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md border border-gray-300 hover:bg-gray-100 transition duration-300 w-full max-w-sm flex items-center justify-center">
                 <i class="fab fa-google mr-2"></i> Iniciar con Google
             </button>
-            <!-- Nuevo botón para acceso anónimo -->
-            <button id="anonymousSignInBtn" class="bg-gray-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-gray-600 transition duration-300 w-full max-w-sm">
+            <button id="anonymousSignInBtn" class="mt-3 bg-gray-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-600 transition duration-300 w-full max-w-sm flex items-center justify-center">
                 <i class="fas fa-user-secret mr-2"></i> Probar sin cuenta
             </button>
         </div>
@@ -234,88 +124,173 @@
             </div>
             
             <form id="planificacionForm">
-                <div class="form-group">
-                    <label for="nivel">Nivel Educativo:</label>
-                    <select id="nivel">
-                        <option value="Primaria">Primaria</option>
-                        <option value="Secundaria">Secundaria</option>
-                        <option value="Inicial">Inicial</option>
-                        <option value="Superior">Superior</option>
-                        <option value="Modalidades">Modalidades</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="gradoAnio">Grado/Año/Curso:</label>
-                    <input type="text" id="gradoAnio" placeholder="Ej: 3ro, 5to, Ciclo Básico, 6to Año">
-                </div>
-
-                <div class="form-group">
-                    <label for="materia">Materia/Área:</label>
-                    <input type="text" id="materia" placeholder="Ej: Lengua y Literatura, Matemática, Ciencias Naturales, Educación Física">
-                </div>
-
-                <div class="form-group">
-                    <label for="temaEspecifico">Tema Específico:</label>
-                    <input type="text" id="temaEspecifico" placeholder="Ej: La función cuadrática, El cuento realista">
-                </div>
-
-                <div class="form-group">
-                    <label for="caracteristicasEstudiantes">Características de los Estudiantes:</label>
-                    <textarea id="caracteristicasEstudiantes" rows="4" placeholder="Ej: Grupo heterogéneo con algunos estudiantes con dificultades de atención; Les gusta trabajar en grupo; Requerir actividades con movimiento."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="localidad">Localidad de la escuela:</label>
-                    <input type="text" id="localidad" placeholder="Ej: Chascomús, La Plata">
-                </div>
-                
-                <div class="form-group">
-                    <label>¿Qué aspectos de la planificación necesitas?</label>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" class="aspecto" value="Objetivo de Aprendizaje" checked> Objetivo de Aprendizaje</label>
-                        <label><input type="checkbox" class="aspecto" value="Contenidos Clave" checked> Contenidos Clave</label>
-                        <label><input type="checkbox" class="aspecto" value="Actividad de Inicio"> Actividad de Inicio</label>
-                        <label><input type="checkbox" class="aspecto" value="Actividad de Desarrollo"> Actividad de Desarrollo</label>
-                        <label><input type="checkbox" class="aspecto" value="Actividad de Cierre"> Actividad de Cierre</label>
-                        <label><input type="checkbox" class="aspecto" value="Recursos Didácticos"> Recursos Didácticos</label>
-                        <label><input type="checkbox" class="aspecto" value="Criterios de Evaluación"> Criterios de Evaluación</label>
-                        <label><input type="checkbox" class="aspecto" value="Adecuaciones Curriculares"> Sugerencias de Adecuaciones Curriculares</label>
+                <p class="text-sm text-gray-500 mb-4 text-center">Completa la mayor cantidad de datos posible. ¡Cuanta más información, más adecuada será la respuesta!</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Campos del nuevo prompt -->
+                    <div class="form-group">
+                        <label for="nivel">Nivel:</label>
+                        <select id="nivel">
+                            <option value="Primario">Primario</option>
+                            <option value="Secundario">Secundario</option>
+                            <option value="Inicial">Inicial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gradoAnio">Grado/Año/Sala:</label>
+                        <input type="text" id="gradoAnio" placeholder="Ej: 2do año, Sala de 4">
+                    </div>
+                    <div class="form-group">
+                        <label for="materia">Materia o espacio curricular:</label>
+                        <input type="text" id="materia" placeholder="Ej: Matemática, Biología">
+                    </div>
+                    <div class="form-group">
+                        <label for="tema">Tema o contenido a trabajar:</label>
+                        <input type="text" id="tema" placeholder="Ej: El ciclo del agua">
+                    </div>
+                    <div class="form-group">
+                        <label for="alcance">Alcance:</label>
+                        <select id="alcance">
+                            <option value="clase suelta">Clase suelta</option>
+                            <option value="unidad didáctica">Unidad didáctica</option>
+                            <option value="planificación trimestral">Planificación trimestral</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="evaluacion">Tipo de Evaluación:</label>
+                        <select id="evaluacion">
+                            <option value="">(Opcional)</option>
+                            <option value="formativa">Formativa</option>
+                            <option value="sumativa">Sumativa</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="formatoRespuesta">Formato de respuesta:</label>
+                        <select id="formatoRespuesta">
+                            <option value="texto">Texto</option>
+                            <option value="tabla">Tabla</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="provincia">Provincia:</label>
+                        <input type="text" id="provincia" placeholder="Ej: Buenos Aires, Santa Fe">
+                    </div>
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad o barrio:</label>
+                        <input type="text" id="ciudad" placeholder="Ej: La Plata, Oberá">
+                    </div>
+                    <div class="form-group">
+                        <label for="caracteristicasEscuela">Características de la escuela:</label>
+                        <input type="text" id="caracteristicasEscuela" placeholder="Ej: Tiene biblioteca, el aula es chica">
+                    </div>
+                    <div class="form-group">
+                        <label for="cantidadEstudiantes">Cantidad de estudiantes:</label>
+                        <input type="number" id="cantidadEstudiantes" placeholder="Ej: 8, 15, 30">
+                    </div>
+                    <div class="form-group">
+                        <label for="caracteristicasEstudiantes">Características de los estudiantes:</label>
+                        <input type="text" id="caracteristicasEstudiantes" placeholder="Ej: Son charlatanes, les gusta jugar">
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="adecuaciones">Adecuaciones para:</label>
+                        <textarea id="adecuaciones" rows="2" placeholder="Ej: un estudiante de baja visión, otro con TEA"></textarea>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="contextoAdicional">Contexto Adicional (Opcional):</label>
+                        <textarea id="contextoAdicional" rows="3" placeholder="Ej: Soy docente suplente, no conozco a los estudiantes..."></textarea>
                     </div>
                 </div>
 
-                <button type="submit" id="submitBtn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition duration-300 w-full max-w-sm mx-auto">
+                <button type="submit" id="submitBtn" class="mt-6 w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-magic mr-2"></i>
                     Generar Planificación con IA
                 </button>
             </form>
         </div>
 
-        <div id="loadingMessage" class="text-center text-blue-500 mt-5 hidden">Cargando respuesta de la IA... esto puede tardar un momento.</div>
-        <div id="errorMessage" class="text-center text-red-500 font-bold mt-5 hidden"></div>
-        <div id="geminiResponseContainer" class="hidden">
-            <h3 class="text-lg font-semibold mt-6 mb-3 text-gray-700">Respuesta de la IA Gemini:</h3>
-            <div id="geminiResponseText" class="bg-white p-5 rounded-lg border border-gray-300 text-gray-800"></div>
-            <button id="copyResponseBtn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-green-600 transition duration-300 mt-4">
+        <div id="loadingMessage" class="text-center text-blue-600 mt-5 hidden">Cargando respuesta de la IA... esto puede tardar un momento.</div>
+        <div id="errorMessage" class="text-center text-red-600 font-bold mt-5 hidden p-3 bg-red-100 rounded-lg"></div>
+        
+        <div id="geminiResponseContainer" class="hidden mt-8">
+            <h3 class="text-xl font-semibold mb-3 text-gray-800">Respuesta de la IA:</h3>
+            <div id="geminiResponseText" class="bg-white p-5 rounded-lg border border-gray-200 text-gray-800"></div>
+            <button id="copyResponseBtn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-300 mt-4">
+                <i class="fas fa-copy mr-2"></i>
                 Copiar respuesta
             </button>
+        </div>
+
+        <!-- NUEVA SECCIÓN DE FEEDBACK -->
+        <div id="feedbackContainer" class="hidden mt-8">
+            <h3 class="text-xl font-semibold mb-3 text-gray-800">¿Qué te pareció la planificación?</h3>
+            <div class="flex items-center gap-4 mb-4">
+                <button id="feedbackGoodBtn" class="feedback-btn text-gray-400 hover:text-green-500 transition text-2xl" data-rating="buena">
+                    <i class="fas fa-thumbs-up"></i>
+                </button>
+                <button id="feedbackBadBtn" class="feedback-btn text-gray-400 hover:text-red-500 transition text-2xl" data-rating="mala">
+                    <i class="fas fa-thumbs-down"></i>
+                </button>
+            </div>
+            <textarea id="feedbackReason" class="w-full" rows="2" placeholder="(Opcional) ¿Por qué? Tu opinión nos ayuda a mejorar."></textarea>
+            <button id="sendFeedbackBtn" class="mt-4 w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300">
+                Enviar opinión
+            </button>
+            <div id="feedbackThanks" class="text-center text-green-600 font-bold mt-4 hidden">¡Gracias por tu opinión!</div>
         </div>
 
     </div>
 
     <!-- Firebase SDKs -->
     <script type="module">
+        /*
+        ****************************************************************************
+        *** ¡ATENCIÓN! SOLUCIÓN PARA EL ERROR "Missing or insufficient permissions" ***
+        ****************************************************************************
+        
+        Si ves este error en la consola, es porque las reglas de seguridad de tu base de datos
+        Firestore no permiten escribir en la colección "feedback".
+
+        Para solucionarlo, sigue estos pasos:
+        1. Ve a tu proyecto en la Consola de Firebase.
+        2. En el menú de la izquierda, ve a Compilar > Firestore Database.
+        3. Selecciona la pestaña "Reglas".
+        4. Reemplaza TODO el contenido del editor de reglas con el siguiente código:
+
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            // Permite a un usuario leer y escribir solo en su propio documento
+            match /users/{userId} {
+              allow read, write: if request.auth != null && request.auth.uid == userId;
+            }
+
+            // ¡REGLA NUEVA! Permite a cualquier usuario autenticado crear un documento
+            // en la colección 'feedback'. Esto es necesario para que el formulario
+            // de opinión funcione.
+            match /feedback/{feedbackId} {
+              allow create: if request.auth != null;
+            }
+          }
+        }
+
+        5. Haz clic en "Publicar".
+
+        ¡Con esto, el error debería desaparecer!
+        */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Configuración de Firebase (proporcionada por el entorno) ---
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Inicialización de Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        
+        let app, auth, db;
+        if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } else {
+            console.error("Configuración de Firebase no encontrada.");
+            document.body.innerHTML = '<div class="text-center p-8 text-red-600">Error: La configuración de la aplicación no se ha cargado.</div>';
+        }
 
         // --- Referencias a elementos del DOM ---
         const authContainer = document.getElementById('authContainer');
@@ -325,7 +300,7 @@
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
         const googleSignInBtn = document.getElementById('googleSignInBtn');
-        const anonymousSignInBtn = document.getElementById('anonymousSignInBtn'); // Nuevo botón
+        const anonymousSignInBtn = document.getElementById('anonymousSignInBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const userEmailDisplay = document.getElementById('userEmailDisplay');
         const userPlanStatus = document.getElementById('userPlanStatus');
@@ -336,37 +311,40 @@
         const geminiResponseContainerDiv = document.getElementById('geminiResponseContainer');
         const geminiResponseText = document.getElementById('geminiResponseText');
         const copyResponseBtn = document.getElementById('copyResponseBtn');
+        
+        // --- Referencias a elementos de FEEDBACK ---
+        const feedbackContainer = document.getElementById('feedbackContainer');
+        const feedbackGoodBtn = document.getElementById('feedbackGoodBtn');
+        const feedbackBadBtn = document.getElementById('feedbackBadBtn');
+        const feedbackReason = document.getElementById('feedbackReason');
+        const sendFeedbackBtn = document.getElementById('sendFeedbackBtn');
+        const feedbackThanks = document.getElementById('feedbackThanks');
+        let selectedRating = null;
 
-        // *** ¡MUY IMPORTANTE! REEMPLAZA ESTA URL CON LA URL DE TU WEBHOOK DE N8N ***
-        const N8N_WEBHOOK_URL = 'https://n8n.planificabot.com/webhook-test/b56a5a17-557f-4adb-9567-8f65c5db2bc1'; // <--- PEGA LA URL AQUÍ
 
-        let currentUser = null; // Variable global para el usuario autenticado
-        let userPlan = null;    // Variable global para el plan del usuario
-        let generationsLeft = 0; // Variable para las generaciones restantes
+        const N8N_WEBHOOK_URL = 'https://n8n.planificabot.com/webhook-test/b56a5a17-557f-4adb-9567-8f65c5db2bc1';
+
+        let currentUser = null;
+        let userPlan = null;
+        let generationsLeft = 0;
 
         // --- LÓGICA DE AUTENTICACIÓN ---
-        // Listener para detectar cambios en el estado de autenticación
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Usuario logueado
                 currentUser = user;
                 authContainer.style.display = 'none';
                 appContainer.style.display = 'block';
-                // Mostrar correo si existe, si no, mostrar que es un usuario anónimo
-                userEmailDisplay.textContent = user.isAnonymous ? 'Usuario anónimo' : user.email;
+                userEmailDisplay.textContent = user.isAnonymous ? 'Usuario de prueba' : user.email;
 
-                // Cargar datos del usuario de Firestore
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
 
                 if (userDoc.exists()) {
-                    // Si el documento existe, obtener los datos
                     const userData = userDoc.data();
                     userPlan = userData.plan;
                     generationsLeft = userData.monthlyGenerations;
                     updateUIBasedOnPlan();
                 } else {
-                    // Si es un nuevo usuario (incluyendo anónimos), creamos un documento con el plan por defecto
                     userPlan = 'gratis';
                     generationsLeft = 5;
                     await setDoc(userDocRef, {
@@ -380,7 +358,6 @@
                 }
 
             } else {
-                // Usuario no logueado
                 currentUser = null;
                 authContainer.style.display = 'flex';
                 appContainer.style.display = 'none';
@@ -390,18 +367,17 @@
             }
         });
 
-        // Función para actualizar la interfaz según el plan del usuario
         function updateUIBasedOnPlan() {
             if (userPlan === 'premium') {
                 userPlanStatus.textContent = 'Plan: Premium (generaciones ilimitadas)';
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Generar Planificación con IA';
+                submitBtn.innerHTML = '<i class="fas fa-magic mr-2"></i> Generar Planificación con IA';
                 submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
                 userPlanStatus.textContent = `Plan: Gratuito (${generationsLeft} de 5 generaciones restantes)`;
                 if (generationsLeft > 0) {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Generar Planificación con IA';
+                    submitBtn.innerHTML = '<i class="fas fa-magic mr-2"></i> Generar Planificación con IA';
                     submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 } else {
                     submitBtn.disabled = true;
@@ -411,219 +387,180 @@
             }
         }
 
-        // Manejadores de eventos para los botones de autenticación
-        loginBtn.addEventListener('click', async () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
+        // --- MANEJADORES DE EVENTOS ---
+        loginBtn.addEventListener('click', () => handleAuth(signInWithEmailAndPassword, emailInput.value, passwordInput.value));
+        registerBtn.addEventListener('click', () => handleAuth(createUserWithEmailAndPassword, emailInput.value, passwordInput.value));
+        googleSignInBtn.addEventListener('click', () => handleAuth(signInWithPopup, new GoogleAuthProvider()));
+        anonymousSignInBtn.addEventListener('click', () => handleAuth(signInAnonymously));
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        async function handleAuth(authFunction, ...args) {
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                console.log('Usuario ha iniciado sesión');
+                await authFunction(auth, ...args);
                 errorMessageDiv.style.display = 'none';
             } catch (error) {
-                console.error('Error al iniciar sesión:', error);
-                errorMessageDiv.textContent = 'Error al iniciar sesión. Verifica tu correo y contraseña.';
+                console.error("Auth Error:", error.code);
+                errorMessageDiv.textContent = 'Error de autenticación. Revisa los datos o inténtalo de nuevo.';
                 errorMessageDiv.style.display = 'block';
             }
-        });
-
-        registerBtn.addEventListener('click', async () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                console.log('Usuario registrado y logueado');
-                errorMessageDiv.style.display = 'none';
-            } catch (error) {
-                console.error('Error al registrarse:', error);
-                errorMessageDiv.textContent = 'Error al registrarse. Asegúrate de usar un correo válido y una contraseña de al menos 6 caracteres.';
-                errorMessageDiv.style.display = 'block';
-            }
-        });
-        
-        googleSignInBtn.addEventListener('click', async () => {
-            const provider = new GoogleAuthProvider();
-            try {
-                await signInWithPopup(auth, provider);
-                console.log('Inicio de sesión con Google exitoso');
-                errorMessageDiv.style.display = 'none';
-            } catch (error) {
-                console.error('Error al iniciar sesión con Google:', error);
-                errorMessageDiv.textContent = 'Error al iniciar sesión con Google. Inténtalo de nuevo.';
-                errorMessageDiv.style.display = 'block';
-            }
-        });
-
-        // Nuevo manejador de eventos para el botón de inicio de sesión anónimo
-        anonymousSignInBtn.addEventListener('click', async () => {
-            try {
-                await signInAnonymously(auth);
-                console.log('Inicio de sesión anónimo exitoso');
-                errorMessageDiv.style.display = 'none';
-            } catch (error) {
-                console.error('Error al iniciar sesión anónimamente:', error);
-                errorMessageDiv.textContent = 'Error al iniciar sesión de forma anónima. Inténtalo de nuevo.';
-                errorMessageDiv.style.display = 'block';
-            }
-        });
-
-
-        logoutBtn.addEventListener('click', async () => {
-            await signOut(auth);
-            console.log('Usuario ha cerrado sesión');
-            userPlan = null;
-            generationsLeft = 0;
-            errorMessageDiv.style.display = 'none';
-        });
+        }
 
         // --- FUNCION PRINCIPAL: ENVIAR SOLICITUD A N8N ---
         planificacionForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+            if (!currentUser) return;
 
-            if (!currentUser) {
-                errorMessageDiv.textContent = 'Debes iniciar sesión para generar una planificación.';
-                errorMessageDiv.style.display = 'block';
-                return;
-            }
-
-            // Ocultar mensajes anteriores y mostrar mensaje de carga
+            // Reset UI
             geminiResponseContainerDiv.style.display = 'none';
+            feedbackContainer.style.display = 'none'; // Ocultar feedback al generar nueva
             errorMessageDiv.style.display = 'none';
             loadingMessageDiv.style.display = 'block';
             geminiResponseText.innerHTML = '';
-            submitBtn.disabled = true; // Desactivar el botón para evitar múltiples peticiones
+            submitBtn.disabled = true;
 
-            // Capturar los datos del formulario
-            const nivel = document.getElementById('nivel').value.trim();
-            const gradoAnio = document.getElementById('gradoAnio').value.trim();
-            const materia = document.getElementById('materia').value.trim();
-            const temaEspecifico = document.getElementById('temaEspecifico').value.trim();
-            const caracteristicasEstudiantes = document.getElementById('caracteristicasEstudiantes').value.trim();
-            const localidad = document.getElementById('localidad').value.trim();
+            // Capturar datos del nuevo formulario
+            const formValues = {
+                nivel: document.getElementById('nivel').value,
+                gradoAnio: document.getElementById('gradoAnio').value,
+                materia: document.getElementById('materia').value,
+                tema: document.getElementById('tema').value,
+                alcance: document.getElementById('alcance').value,
+                evaluacion: document.getElementById('evaluacion').value,
+                formatoRespuesta: document.getElementById('formatoRespuesta').value,
+                provincia: document.getElementById('provincia').value,
+                ciudad: document.getElementById('ciudad').value,
+                caracteristicasEscuela: document.getElementById('caracteristicasEscuela').value,
+                cantidadEstudiantes: document.getElementById('cantidadEstudiantes').value,
+                caracteristicasEstudiantes: document.getElementById('caracteristicasEstudiantes').value,
+                adecuaciones: document.getElementById('adecuaciones').value,
+                contextoAdicional: document.getElementById('contextoAdicional').value,
+            };
 
-            const aspectoCheckboxes = document.querySelectorAll('.aspecto');
-            const aspectosSeleccionados = Array.from(aspectoCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
-
-            // Construir el prompt para la IA
+            // Construir el nuevo prompt dinámicamente
             const promptAI = `
-                **Rol:** Asistente pedagógico experto de la Provincia de Buenos Aires.
-                **Tarea:** Genera una planificación o actividades detalladas para el aula, adaptadas a los siguientes parámetros.
-                **Contexto crucial:** Utiliza EXCLUSIVAMENTE como base para tu respuesta los diseños curriculares, las normativas vigentes y los recursos pedagógicos propios de la educación de la Provincia de Buenos Aires (PBA). Si la información proporcionada no es suficiente para basarse en documentos de PBA, indica claramente la limitación. En el caso de nivel inicial, debes usar el diseño curricular del año 2022, y en el caso del nivel primario, los diseños curriculares del año 2018.
-                ---
-                **Parámetros de la Solicitud:**
-                Nivel Educativo: ${nivel || 'No especificado'}
-                Grado/Año/Curso: ${gradoAnio || 'No especificado'}
-                Materia/Área: ${materia || 'No especificado'}
-                Tema Específico: ${temaEspecifico || 'No especificado'}
-                Características de los Estudiantes: ${caracteristicasEstudiantes || 'No especificadas'}
-                Localidad de la escuela: ${localidad || 'No especificada'}
-                ---
-                **Aspectos de la Planificación requeridos:**
-                Necesito: ${aspectosSeleccionados.join(', ')}.
-                ---
-                **Instrucciones adicionales para la IA:**
-                * Sé conciso, práctico y directo.
-                * Adapta el lenguaje y las actividades para el nivel educativo y las características específicas de los estudiantes en la localidad dada.
-                * Si algún aspecto de la planificación no puede ser generado con base en los documentos curriculares de PBA, indícalo claramente.
-                * Presenta la información de manera clara, utilizando viñetas, numeración o subtítulos cuando sea apropiado.
-                * Mantén un tono profesional y colaborativo.
+                Eres un planificador docente argentino, experto en educación. Tu misión es generar una planificación didáctica de alta calidad, precisa y lista para ser implementada. Debes ajustarte estrictamente a la normativa educativa vigente de la provincia informada, y al contexto específico provisto.
+                ---**Instrucciones Generales:**
+                - Si se localiza la normativa, diseño curricular o documento pedagógico de la provincia informada, que da el marco para toda la construcción, incluye el nombre completo en la fundamentación.
+                - Antes de generar la respuesta, verifica la vigencia de la normativa y los documentos pedagógicos de la provincia. Cita el nombre completo y la fecha de publicación o de última actualización de los documentos utilizados en la fundamentación, y avisa si la información no está actualizada o si no fue posible confirmarla. Si no puedes verificar, continúa.
+                - Si el tema no figura en el diseño curricular, o no corresponde al curso indicado, avisa al docente pero elabora una respuesta adecuada.
+                - Si un campo de información está vacío, ignóralo y continúa.
+                - No incluyas textos introductorios; ve directamente a la planificación.
+                - Formato de salida: texto limpio, sin etiquetas de código ni preámbulos.
+                - Las actividades deben ser innovadoras, variadas y pertinentes al perfil del estudiante.
+                - Alcance: [${formValues.alcance}]. Nota: Detalla minuciosamente las actividades por momentos (inicio, desarrollo, cierre) para una clase suelta; por día con algo menos de explicación para una unidad, durante los días necesarios para trabajar el tema o contenido; y por clase dentro de cada mes (2 clases/semana) para una planificación trimestral.
+                - Considera la información del campo "Contexto Adicional" como un dato de alta prioridad que debe influir en la fundamentación, la elección de actividades y los instrumentos de evaluación.
+                ---**Componentes a Incluir:**
+                - Fundamentación breve (citando el nombre completo del diseño curricular o documento pedagógico si es localizado).
+                - Objetivos de aprendizaje (extraídos del diseño curricular).
+                - Contenidos clave (utiliza la terminología oficial del diseño curricular; si no se localiza, formula el contenido de la manera más cercana posible al marco pedagógico de la jurisdicción).
+                - Actividades (con inicio, desarrollo y cierre).
+                - Recursos didácticos (sugerencias básicas).
+                - Orientaciones de evaluación: Incluye orientaciones específicas (según el tipo de evaluación solicitada: ${formValues.evaluacion || 'no especificada'}), detallando instrumentos y criterios.
+                ---**Información a Completar:**
+                - **Nivel:** [${formValues.nivel}]
+                - **Grado/Año/Sala:** [${formValues.gradoAnio}]
+                - **Materia o espacio curricular:** [${formValues.materia}]
+                - **Tema o contenido a trabajar:** [${formValues.tema}]
+                - **Alcance:** [${formValues.alcance}]
+                - **Evaluación:** [${formValues.evaluacion}]
+                - **Formato de respuesta:** [${formValues.formatoRespuesta}]
+                - **Provincia:** [${formValues.provincia}]
+                - **Ciudad o barrio:** [${formValues.ciudad}]
+                - **Características de la escuela:** [${formValues.caracteristicasEscuela}]
+                - **Cantidad de estudiantes:** [${formValues.cantidadEstudiantes}]
+                - **Características de los estudiantes:** [${formValues.caracteristicasEstudiantes}]
+                - **Adecuaciones para:** [${formValues.adecuaciones}]
+                - **Contexto Adicional:** [${formValues.contextoAdicional}]
             `.trim();
 
             try {
-                // Obtener el token de autenticación del usuario
                 const idToken = await currentUser.getIdToken();
-
-                // Preparar los datos para enviar al webhook de n8n
-                const requestBodyForN8n = {
-                    prompt_ia: promptAI,
-                    form_data: {
-                        nivel: nivel,
-                        gradoAnio: gradoAnio,
-                        materia: materia,
-                        temaEspecifico: temaEspecifico,
-                        caracteristicasEstudiantes: caracteristicasEstudiantes,
-                        localidad: localidad,
-                        aspectosSeleccionados: aspectosSeleccionados
-                    }
-                };
-
-                // Enviar la petición POST al Webhook de n8n con el token en la cabecera
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${idToken}` // Token de autenticación
-                    },
-                    body: JSON.stringify(requestBodyForN8n)
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                    body: JSON.stringify({ prompt_ia: promptAI })
                 });
 
-                loadingMessageDiv.style.display = 'none';
-                submitBtn.disabled = false; // Habilitar el botón nuevamente
-
-                if (!response.ok) {
-                    const errorDetails = await response.json();
-                    throw new Error(errorDetails.message || 'Error desconocido');
-                }
+                if (!response.ok) throw new Error((await response.json()).message || 'Error del servidor');
 
                 const data = await response.json();
+                if (!data.material_generado) throw new Error(data.error || 'La IA no devolvió una respuesta válida.');
 
-                if (data.material_generado) {
-                    // Usar un parser de Markdown a HTML para una mejor visualización
-                    // (Esta es una simplificación, en un entorno real usarías una librería)
-                    let formattedText = data.material_generado
-                        .replace(/#\s+(.*)/g, '<h3>$1</h3>') // Encabezados H3
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Negritas
-                        .replace(/\n/g, '<br>'); // Saltos de línea
-
-                    geminiResponseText.innerHTML = formattedText;
-                    geminiResponseContainerDiv.style.display = 'block';
-                    geminiResponseContainerDiv.scrollIntoView({ behavior: 'smooth' });
-                    errorMessageDiv.style.display = 'none';
-                } else if (data.error) {
-                    errorMessageDiv.textContent = data.error;
-                    errorMessageDiv.style.display = 'block';
-                } else {
-                    errorMessageDiv.textContent = `La IA no devolvió una planificación válida.`;
-                    errorMessageDiv.style.display = 'block';
-                }
-
-                // Actualizar el estado del usuario después de una generación exitosa (o con error)
-                // Es importante volver a cargar el documento para reflejar el nuevo contador de generaciones
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    userPlan = userData.plan;
-                    generationsLeft = userData.monthlyGenerations;
-                    updateUIBasedOnPlan();
-                }
+                geminiResponseText.innerHTML = data.material_generado.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                geminiResponseContainerDiv.style.display = 'block';
+                feedbackContainer.style.display = 'block'; // Mostrar feedback
+                geminiResponseContainerDiv.scrollIntoView({ behavior: 'smooth' });
 
             } catch (error) {
-                console.error("Error de comunicación:", error);
-                loadingMessageDiv.style.display = 'none';
-                submitBtn.disabled = false;
-                errorMessageDiv.textContent = `Hubo un error: ${error.message}. Por favor, inténtalo de nuevo.`;
+                errorMessageDiv.textContent = `Hubo un error: ${error.message}.`;
                 errorMessageDiv.style.display = 'block';
+            } finally {
+                loadingMessageDiv.style.display = 'none';
+                await updateUserStatus();
             }
         });
 
-        // Lógica del botón de copiar (sin cambios)
-        copyResponseBtn.addEventListener('click', async () => {
-            const textToCopy = geminiResponseText.textContent;
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                // Usamos un modal o un mensaje temporal en lugar de alert()
-                const originalText = copyResponseBtn.textContent;
-                copyResponseBtn.textContent = '¡Copiado!';
-                setTimeout(() => {
-                    copyResponseBtn.textContent = originalText;
-                }, 2000);
-            } catch (err) {
-                console.error('Error al copiar el texto: ', err);
-                errorMessageDiv.textContent = 'No se pudo copiar la respuesta automáticamente. Por favor, cópiala manualmente.';
-                errorMessageDiv.style.display = 'block';
+        async function updateUserStatus() {
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                userPlan = userData.plan;
+                generationsLeft = userData.monthlyGenerations;
+                updateUIBasedOnPlan();
             }
+        }
+
+        // --- LÓGICA DE FEEDBACK ---
+        feedbackGoodBtn.addEventListener('click', () => {
+            selectedRating = 'buena';
+            feedbackGoodBtn.classList.add('text-green-500');
+            feedbackBadBtn.classList.remove('text-red-500');
+        });
+
+        feedbackBadBtn.addEventListener('click', () => {
+            selectedRating = 'mala';
+            feedbackBadBtn.classList.add('text-red-500');
+            feedbackGoodBtn.classList.remove('text-green-500');
+        });
+
+        sendFeedbackBtn.addEventListener('click', async () => {
+            if (!selectedRating) {
+                alert('Por favor, selecciona una calificación (pulgar arriba o abajo).');
+                return;
+            }
+            try {
+                await addDoc(collection(db, "feedback"), {
+                    userId: currentUser.uid,
+                    rating: selectedRating,
+                    reason: feedbackReason.value,
+                    responseText: geminiResponseText.innerText, // Guarda el texto para contexto
+                    createdAt: new Date()
+                });
+                feedbackContainer.style.display = 'none';
+                feedbackThanks.style.display = 'block';
+                setTimeout(() => feedbackThanks.style.display = 'none', 3000);
+            } catch (error) {
+                console.error("Error enviando feedback: ", error);
+                alert("No se pudo enviar tu opinión. Inténtalo de nuevo.");
+            }
+        });
+
+        copyResponseBtn.addEventListener('click', () => {
+            const textToCopy = geminiResponseText.innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                document.execCommand('copy');
+                const originalText = copyResponseBtn.innerHTML;
+                copyResponseBtn.innerHTML = '<i class="fas fa-check mr-2"></i> ¡Copiado!';
+                setTimeout(() => copyResponseBtn.innerHTML = originalText, 2000);
+            } catch (err) {
+                console.error('Error al copiar: ', err);
+            }
+            document.body.removeChild(tempTextArea);
         });
     </script>
 </body>
