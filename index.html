@@ -241,41 +241,7 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        /*
-        ****************************************************************************
-        *** ¡ATENCIÓN! SOLUCIÓN PARA EL ERROR "Missing or insufficient permissions" ***
-        ****************************************************************************
         
-        Si ves este error en la consola, es porque las reglas de seguridad de tu base de datos
-        Firestore no permiten escribir en la colección "feedback".
-
-        Para solucionarlo, sigue estos pasos:
-        1. Ve a tu proyecto en la Consola de Firebase.
-        2. En el menú de la izquierda, ve a Compilar > Firestore Database.
-        3. Selecciona la pestaña "Reglas".
-        4. Reemplaza TODO el contenido del editor de reglas con el siguiente código:
-
-        rules_version = '2';
-        service cloud.firestore {
-          match /databases/{database}/documents {
-            // Permite a un usuario leer y escribir solo en su propio documento
-            match /users/{userId} {
-              allow read, write: if request.auth != null && request.auth.uid == userId;
-            }
-
-            // ¡REGLA NUEVA! Permite a cualquier usuario autenticado crear un documento
-            // en la colección 'feedback'. Esto es necesario para que el formulario
-            // de opinión funcione.
-            match /feedback/{feedbackId} {
-              allow create: if request.auth != null;
-            }
-          }
-        }
-
-        5. Haz clic en "Publicar".
-
-        ¡Con esto, el error debería desaparecer!
-        */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -565,6 +531,7 @@
     </script>
 </body>
 </html>
+
 
 
 
